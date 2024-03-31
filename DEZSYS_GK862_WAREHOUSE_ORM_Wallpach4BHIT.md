@@ -86,31 +86,79 @@ hibernate.dialect=org.hibernate.dialect.MySQLDialect
 
 
 ### Erweiterung des Datenmodells
-- Anpassung des Datenmodells für die Data Warehouse-Anwendung.
-- Hinzufügen von Entity Klassen einer Beziehung zwischen Datawarehouse und Products.
-- Implementierung der Entitätsbeziehung mittels ORM.
+1. **Anpassung des Datenmodells für die Data Warehouse-Anwendung**
+- Hinzufügen von Entity Klassen WarehouseEntity & ProduktEntity mit einer Beziehung zwischen Datawarehouse und Products.
+- Erstellen der Repository interfaces 
+- Implementierung der Entitätsbeziehung mittels ORM-Annotationen @OneToMany und @ManyToOne. 
 
-```java
-// Beispielcode für die Implementierung der Entitätsbeziehung
-@Entity
-public class Datawarehouse {
-   @OneToMany(mappedBy = "datawarehouse")
-      private List<Product> products;
-      // Weitere Entitätsattribute und Methoden
-}
-```
 
-4. **Datenaufnahme:**
+2. **Datenaufnahme und Test:**
    - Einfügen von Datensätzen in die Data Warehouse- und Produkttabellen.
    - Protokollierung der eingefügten Datensätze.
 
-   ```java
-   // Beispielcode für das Einfügen von Datensätzen
-   datawarehouseRepository.save(datawarehouse);
-   productRepository.saveAll(products);
-   ```
+Hier sind die aktualisierten CURL-Anweisungen mit der von Ihnen angegebenen Schreibweise:
 
-5. **Erweiterte Anforderungen:**
+**Warehouse 1 hinzufügen:**
+```bash
+curl -X POST http://localhost:8080/warehouse/add -d "warehouseName=Warehouse1" -d "street=Wexstraße 19" -d "city=Wien" -d "country=Austria" -d "plz=1200"
+```
+
+**Warehouse 2 hinzufügen:**
+```bash
+curl -X POST http://localhost:8080/warehouse/add -d "warehouseName=Warehouse2" -d "street=Sportgasse" -d "city=Graz" -d "country=Austria" -d "plz=54321"
+```
+
+**Alle Warehouses anzeigen:**
+```bash
+curl http://localhost:8080/warehouse/all
+```
+
+**Product 1 zu Warehouse 1 hinzufügen:**
+```bash
+curl -X POST http://localhost:8080/product/add?warehouseId=1 -d "name=Krustenbrot" -d "category=Brot" -d "amount=10" -d "unit=Laibe"
+```
+
+**Product 2 zu Warehouse 1 hinzufügen:**
+```bash
+curl -X POST http://localhost:8080/product/add?warehouseId=1 -d "name=Avocado" -d "category=Früchte" -d "amount=20" -d "unit=Stück"
+```
+
+**Product 3 zu Warehouse 1 hinzufügen:**
+```bash
+curl -X POST http://localhost:8080/product/add?warehouseId=1 -d "name=Quinoa" -d "category=Getreide" -d "amount=15" -d "unit=Kg"
+```
+
+**Product 4 zu Warehouse 1 hinzufügen:**
+```bash
+curl -X POST http://localhost:8080/product/add?warehouseId=1 -d "name=Mandel Milch" -d "category=Pflanzenmilch" -d "amount=5" -d "unit=Liter"
+```
+
+**Product 5 zu Warehouse 2 hinzufügen (Wiederverwendung von Product 1):**
+```bash
+curl -X POST http://localhost:8080/warehouse/2/product/add -d "productId=1"
+```
+
+**Product 6 zu Warehouse 2 hinzufügen (Wiederverwendung von Product 2):**
+```bash
+curl -X POST http://localhost:8080/warehouse/2/product/add -d "productId=2"
+```
+
+**Product 7 zu Warehouse 2 hinzufügen (Neues Produkt):**
+```bash
+curl -X POST http://localhost:8080/product/add?warehouseId=2 -d "name=Kartoffelsalat" -d "category=Salate" -d "amount=8" -d "unit=Schüsseln"
+```
+
+**Alle Produkte anzeigen:**
+```bash
+curl http://localhost:8080/product/all
+```
+
+**Alle Produkte eines Lagerhauses anzeigen:**
+```bash
+curl http://localhost:8080/warehouse/1/product/all
+```
+
+### Erweiterte Anforderungen
    - Untersuchung der verfügbaren Methoden für das CrudRepository.
    - Erweiterung des Data Warehouse-Repository um zusätzliche Funktionalitäten.
 

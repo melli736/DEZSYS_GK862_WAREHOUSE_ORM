@@ -25,20 +25,6 @@ public class WarehouseEntity {
     @OneToMany(mappedBy = "warehouse")
     private ArrayList<ProductEntity> products;
 
-    /**
-     * Konstruktor
-     */
-    public WarehouseEntity() {
-
-        int r = new Random().nextInt(6) + 4;
-
-        products = new ArrayList<ProductEntity>(r);
-
-        for(int i = 0; i < r; i++) {
-            products.add(new ProductEntity());
-        }
-
-    }
 
     public ArrayList<ProductEntity> getProductData() {
         return this.products;
@@ -110,5 +96,9 @@ public class WarehouseEntity {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ArrayList<ProductEntity> getProducts() {
+        return products;
     }
 }

@@ -22,29 +22,6 @@ public class ProductEntity {
     @ManyToOne
     private WarehouseEntity warehouse;
 
-    public ProductEntity() {
-        String[][] products = {
-                {"Bio Orangensaft", "Getränk", "1L Pakung"},
-                {"Bio Apfelsaft", "Getränk", "1L Pakung"},
-                {"Ariel Waschmittel Color", "Waschmittel", "Packung 3Kg"},
-                {"Persil Discs Color", "Waschmittel", "Packung 700g"}
-        };
-
-        // Generierung der ID als Integer
-        this.id = generateRandomId();
-
-        int rInt = new Random().nextInt(3);
-        this.name = products[rInt][0];
-        this.category = products[rInt][1];
-        this.amount = String.valueOf(new Random().nextInt(5000));
-        this.unit = products[rInt][2];
-    }
-
-    // Hilfsmethode zur Generierung einer zufälligen Produkt-ID
-    private int generateRandomId() {
-        return new Random().nextInt(1000000) + 1000000; // Stellt sicher, dass die ID mindestens 7-stellig ist
-    }
-
     public Integer getId() {
         return id;
     }
