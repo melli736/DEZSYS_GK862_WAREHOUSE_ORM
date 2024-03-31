@@ -54,11 +54,12 @@ mysql> grant all on db_warehouse.* to 'user'@'%'; -- Gives all privileges to the
 - Datei application.properties im Verzeichnis src/main/resources bearbeiten und Verbindungsinformationen zur MySQL-Datenbank einfügen.
 ```
 spring.jpa.hibernate.ddl-auto=update
-spring.datasource.url=jdbc:mysql://${MYSQL_HOST:localhost}:3306/db_example
+spring.datasource.url=jdbc:mysql://${MYSQL_HOST:localhost}:3306/db_warehouse
 spring.datasource.username=user
 spring.datasource.password=pswd
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 #spring.jpa.show-sql: true
+hibernate.dialect=org.hibernate.dialect.MySQLDialect
 ```
 
 5. **Erstellung des Datenbankmodells:**
@@ -83,21 +84,10 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 10. **Sicherheitsanpassungen (optional):**
 - Sobald deine Anwendung produktionsbereit ist, solltest du Sicherheitsänderungen vornehmen, um dich vor potenziellen SQL-Injection-Angriffen zu schützen.
 
-Folge diesen Schritten sorgfältig, um das Tutorial erfolgreich abzuschließen und eine Spring-Anwendung mit MySQL-Datenbankzugriff zu erstellen.
-
-```java
-// Beispielcode für die MySQL-Konfiguration in Spring
-@Configuration
-@EnableJpaRepositories(basePackages = "com.example.demo.repository")
-@EntityScan(basePackages = "com.example.demo.model")
-public class MySqlConfig {
-    // MySQL-Konfiguration hier einfügen
-}
-```
 
 ### Erweiterung des Datenmodells
 - Anpassung des Datenmodells für die Data Warehouse-Anwendung.
-- Hinzufügen einer Beziehung zwischen Datawarehouse und Products.
+- Hinzufügen von Entity Klassen einer Beziehung zwischen Datawarehouse und Products.
 - Implementierung der Entitätsbeziehung mittels ORM.
 
 ```java
