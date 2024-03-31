@@ -51,19 +51,26 @@ mysql> grant all on db_warehouse.* to 'user'@'%'; -- Gives all privileges to the
 ```
 
 4. **Konfiguration der Datenbankverbindung:**
-- Datei application.properties im Verzeichnis src/main/resources erstellen 
-- Verbindungsinformationen zur MySQL-Datenbank in application.properties einfügen.
+- Datei application.properties im Verzeichnis src/main/resources bearbeiten und Verbindungsinformationen zur MySQL-Datenbank einfügen.
+```
+spring.jpa.hibernate.ddl-auto=update
+spring.datasource.url=jdbc:mysql://${MYSQL_HOST:localhost}:3306/db_example
+spring.datasource.username=user
+spring.datasource.password=pswd
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+#spring.jpa.show-sql: true
+```
 
 5. **Erstellung des Datenbankmodells:**
-- Erstelle eine Klasse namens User im Verzeichnis src/main/java/com/example/accessingdatamysql.
-- Definiere die Attribute der Benutzerklasse (id, name, email) und markiere sie mit entsprechenden Annotationen für Hibernate.
+- Klasse namens User im Verzeichnis src/main/java/com/example/accessingdatamysql erstellen.
+- Attribute der (id, name, email) definieren und mit Annotationen für Hibernate markieren.
    
 6. **Erstellung des Repositories:**
-- Erstelle eine Schnittstelle namens UserRepository im gleichen Verzeichnis wie die Benutzerklasse.
+- Erstelle einer Klasse namens UserRepository im gleichen Verzeichnis wie User.java
 - Erweitere die Schnittstelle CrudRepository und definiere den Entitätstyp (User) und den Typ des Primärschlüssels (Integer).
 
 7. **Erstellung des Controllers:**
-- Erstelle eine Klasse namens MainController im gleichen Verzeichnis wie die Benutzerklasse.
+- Klasse MainController im gleichen Verzeichnis wie die Benutzerklasse erstellen.
 - Definiere Methoden für das Hinzufügen eines neuen Benutzers und das Abrufen aller Benutzer. Markiere sie mit entsprechenden Annotationen.
 
 8. **Starten der Anwendung:**
