@@ -4,6 +4,8 @@ package com.example.accessingdatamysql;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -67,6 +69,15 @@ public class MainController {
     @GetMapping(path="/{id}")
     public @ResponseBody Optional<WarehouseEntity> getWarehouseById(@PathVariable Integer id) {
         return warehouseRepository.findById(id);
+    }
+
+    @GetMapping(path="/{id}/products")
+    public @ResponseBody List<ProductEntity> getAllProductsByWarehouseId(@PathVariable Integer id) {
+        Optional<WarehouseEntity> warehouse = warehouseRepository.findById(id);
+        if (warehouse.isPresent()) {
+            return warehouse.get().getProducts();
+        }
+        return null;
     }
 
     @GetMapping(path="/{id}/products/{productId}")

@@ -1,5 +1,6 @@
 package com.example.accessingdatamysql;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Random;
@@ -17,7 +18,8 @@ public class ProductEntity {
     private String unit;
 
     @ManyToOne
-    @JoinColumn(name="warehouse_id", nullable = false)
+    @JoinColumn(name="warehouse_id", nullable=false)
+    @JsonIgnore
     private WarehouseEntity warehouse;
 
     public Integer getId() {

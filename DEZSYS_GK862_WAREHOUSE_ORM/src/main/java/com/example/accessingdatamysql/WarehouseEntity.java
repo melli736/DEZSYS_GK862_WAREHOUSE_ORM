@@ -1,6 +1,7 @@
 package com.example.accessingdatamysql;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +24,7 @@ public class WarehouseEntity {
     private String plz;
 
     @OneToMany(mappedBy = "warehouse")
+    @JsonIgnore
     private List<ProductEntity> products;
 
     public List<ProductEntity> getProductData() {

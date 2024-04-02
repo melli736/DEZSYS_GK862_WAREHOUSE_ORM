@@ -113,65 +113,94 @@ curl -X POST http://localhost:8080/warehouse/add -d "warehouseName=Warehouse2" -
 curl http://localhost:8080/warehouse/all
 ```
 
+
 **Product 1 zu Warehouse 1 hinzufügen:**
 ```bash
-curl -X POST http://localhost:8080/product/add?warehouseId=1 -d "name=Krustenbrot" -d "category=Brot" -d "amount=10" -d "unit=Laibe"
+curl http://localhost:8080/warehouse/1/products/add -d "name=Krustenbrot" -d "category=Brot" -d "amount=10" -d "unit=Laibe" -d "warehouseId=1"
 ```
 
 **Product 2 zu Warehouse 1 hinzufügen:**
 ```bash
-curl -X POST http://localhost:8080/product/add?warehouseId=1 -d "name=Avocado" -d "category=Früchte" -d "amount=20" -d "unit=Stück"
+curl http://localhost:8080/warehouse/1/products/add -d "name=Avocado" -d "category=Früchte" -d "amount=20" -d "unit=Stück" -d "warehouseId=1"
 ```
 
 **Product 3 zu Warehouse 1 hinzufügen:**
 ```bash
-curl -X POST http://localhost:8080/product/add?warehouseId=1 -d "name=Quinoa" -d "category=Getreide" -d "amount=15" -d "unit=Kg"
+curl http://localhost:8080/warehouse/1/products/add -d "name=Quinoa" -d "category=Getreide" -d "amount=15" -d "unit=Kg" -d "warehouseId=1"
 ```
 
 **Product 4 zu Warehouse 1 hinzufügen:**
 ```bash
-curl -X POST http://localhost:8080/product/add?warehouseId=1 -d "name=Mandel Milch" -d "category=Pflanzenmilch" -d "amount=5" -d "unit=Liter"
+curl http://localhost:8080/warehouse/1/products/add -d "name=Mandel Milch" -d "category=Pflanzenmilch" -d "amount=5" -d "unit=Liter" -d "warehouseId=1"
 ```
 
 **Product 5 zu Warehouse 2 hinzufügen (Wiederverwendung von Product 1):**
 ```bash
-curl -X POST http://localhost:8080/warehouse/2/product/add -d "productId=1"
+curl http://localhost:8080/warehouse/2/products/add -d "name=Krustenbrot" -d "category=Brot" -d "amount=10" -d "unit=Laibe" -d "warehouseId=2"
 ```
 
 **Product 6 zu Warehouse 2 hinzufügen (Wiederverwendung von Product 2):**
 ```bash
-curl -X POST http://localhost:8080/warehouse/2/product/add -d "productId=2"
+curl http://localhost:8080/warehouse/2/products/add -d "name=Avocado" -d "category=Früchte" -d "amount=20" -d "unit=Stück" -d "warehouseId=2"
 ```
 
 **Product 7 zu Warehouse 2 hinzufügen (Neues Produkt):**
 ```bash
-curl -X POST http://localhost:8080/product/add?warehouseId=2 -d "name=Kartoffelsalat" -d "category=Salate" -d "amount=8" -d "unit=Schüsseln"
+curl http://localhost:8080/warehouse/2/products/add -d "name=Kartoffelsalat" -d "category=Salate" -d "amount=8" -d "unit=Schüsseln" -d "warehouseId=2"
 ```
 
-**Alle Produkte anzeigen:**
+**Anzeige aller Produkte im Warehouse 1**
 ```bash
-curl http://localhost:8080/product/all
+curl http://localhost:8080/warehouse/1/products
 ```
 
-**Alle Produkte eines Lagerhauses anzeigen:**
+**Anzeige eines bestimmten Produkte im Warehouse 1**
 ```bash
-curl http://localhost:8080/warehouse/1/product/all
+curl http://localhost:8080/warehouse/1/products/1  
 ```
 
+**Warehouse 3 Update**
+```bash
+curl -X PUT http://localhost:8080/warehouse/3 -d "warehouseName=Neuer Lagerhausname" -d "street=Neue Strasse" -d "city=Neue Stadt" -d "country=Neues Land" -d "plz=Neue PLZ"
+```
 ### Erweiterte Anforderungen
-   - Untersuchung der verfügbaren Methoden für das CrudRepository.
-   - Erweiterung des Data Warehouse-Repository um zusätzliche Funktionalitäten.
 
-   ```java
-   // Beispielcode für die Implementierung zusätzlicher Repository-Funktionen
-   public interface DatawarehouseRepository extends CrudRepository<Datawarehouse, Long> {
+Das `CrudRepository` Interface bietet verschiedene Methoden für die Datenverwaltung:
+
+1. `save`: Speichert eine Entität. Falls die Entität bereits vorhanden ist, wird sie aktualisiert.
+2. `saveAll`: Speichert eine Liste von Entitäten.
+3. `findById`: Sucht eine Entität anhand ihrer ID.
+4. `existsById`: Überprüft, ob eine Entität mit der gegebenen ID vorhanden ist.
+5. `findAll`: Ruft alle Entitäten des Typs ab.
+6. `findAllById`: Ruft alle Entitäten mit den angegebenen IDs ab.
+7. `count`: Gibt die Anzahl der Entitäten zurück.
+8. `deleteById`: Löscht eine Entität anhand ihrer ID.
+9. `delete`: Löscht eine gegebene Entität.
+10. `deleteAllById`: Löscht alle Entitäten mit den angegebenen IDs.
+11. `deleteAll`: Löscht alle Entitäten, die vom Repository verwaltet werden.
+
+### Probleme
+
+1. Beim Rückgeben von ORM-Daten tritt eine Rekursion auf, die zu unerwünschten Ergebnissen führt. 
+Lösung: Verwendung der Annotation `@JsonIgnore` in der Klasse ProductEntity, um die Rekursion zu beenden. Durch Hinzufügen dieser Annotation wird verhindert, dass die JSON-Daten weiterhin rekursiv durchlaufen werden.
+```java
+@ManyToOne
+@JoinColumn(name="warehouse_id", nullable=false)
+@JsonIgnore
+private WarehouseEntity warehouse;
+```
+
+### Implementierung zusätzlicher Repository-Funktionen 
+```java
+
+public interface DatawarehouseRepository extends CrudRepository<Datawarehouse, Long> {
        List<Datawarehouse> findByDatawarehouseId(String datawarehouseId);
        Datawarehouse findByDatawarehouseIdAndProductId(String datawarehouseId, String productId);
        Datawarehouse updateByDatawarehouseId(String datawarehouseId);
    }
    ```
 
-6. **Datenbankmigration zu PostgreSQL:**
+### Datenbankmigration zu PostgreSQL
    - Anpassung der Konfigurationsdateien für PostgreSQL.
    - Migration der Datenbank von MySQL zu PostgreSQL.
 
@@ -184,9 +213,3 @@ curl http://localhost:8080/warehouse/1/product/all
        // PostgreSQL-Konfiguration hier einfügen
    }
    ```
-
-7. **Abschluss und Zusammenfassung:**
-   - Überprüfung aller Implementierungsschritte und Dokumentation.
-   - Zusammenfassung der erreichten Ergebnisse und der erfüllten Anforderungen.
-
-Diese strukturierte Arbeitsdokumentation führt Sie durch die Umsetzung der Aufgabe "DEZSYS_GK862_WAREHOUSE_ORM" und bietet klare Anleitungen für die theoretischen Konzepte sowie praktische Implementierungsschritte.
