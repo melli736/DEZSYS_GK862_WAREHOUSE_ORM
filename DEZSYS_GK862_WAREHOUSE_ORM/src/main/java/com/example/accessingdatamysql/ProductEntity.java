@@ -1,15 +1,12 @@
 package com.example.accessingdatamysql;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 import java.util.Random;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class ProductEntity {
+
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
@@ -20,6 +17,7 @@ public class ProductEntity {
     private String unit;
 
     @ManyToOne
+    @JoinColumn(name="warehouse_id", nullable = false)
     private WarehouseEntity warehouse;
 
     public Integer getId() {

@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @Entity // This tells Hibernate to make a table out of this class
@@ -23,10 +23,9 @@ public class WarehouseEntity {
     private String plz;
 
     @OneToMany(mappedBy = "warehouse")
-    private ArrayList<ProductEntity> products;
+    private List<ProductEntity> products;
 
-
-    public ArrayList<ProductEntity> getProductData() {
+    public List<ProductEntity> getProductData() {
         return this.products;
     }
 
@@ -98,7 +97,7 @@ public class WarehouseEntity {
         }
     }
 
-    public ArrayList<ProductEntity> getProducts() {
+    public List<ProductEntity> getProducts() {
         return products;
     }
 }

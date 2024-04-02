@@ -1,13 +1,13 @@
+// MainController.java
 package com.example.accessingdatamysql;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
+import java.util.Optional;
 
 @Controller
-@RequestMapping(path="/")
+@RequestMapping(path="/warehouse")
 public class MainController {
     @Autowired
     private WarehouseRepository warehouseRepository;
@@ -15,7 +15,7 @@ public class MainController {
     @Autowired
     private ProductRepository productRepository;
 
-    @PostMapping(path="/warehouse/add")
+    @PostMapping(path="/add")
     public @ResponseBody String addNewWarehouse (@RequestParam String warehouseName,
                                                  @RequestParam String street,
                                                  @RequestParam String city,
@@ -31,27 +31,25 @@ public class MainController {
         return "Warehouse saved";
     }
 
-    @GetMapping(path="/warehouse/all")
+    @GetMapping(path="/all")
     public @ResponseBody Iterable<WarehouseEntity> getAllWarehouses() {
         return warehouseRepository.findAll();
     }
 
-    @PostMapping(path="/product/add")
-    public @ResponseBody String addNewProduct (@RequestParam String name,
-                                               @RequestParam String category,
-                                               @RequestParam String amount,
-                                               @RequestParam String unit,
-                                               @RequestParam Integer warehouseId) {
-        ProductEntity product = new ProductEntity();
-        product.setName(name);
-        product.setCategory(category);
-        product.setAmount(amount);
-        product.setUnit(unit);
-
-        // Sucht das Lager anhand der ID und setzt es für das Produkt
-        WarehouseEntity warehouse = warehouseRepository.findById(warehouseId).orElse(null);
-        if (warehouse != null) {
-            product.setWarehouse(warehouse);
+    @PostMapping(path="/{id}/products/add")
+    public @ResponseBody String addProductToWarehouse (@RequestParam String name,
+                                                       @RequestParam String category,
+                                                       @RequestParam String amount,
+                                                       @RequestParam String unit,
+                                                       @RequestParam Integer warehouseId) {
+        Optional<WarehouseEntity> warehouseOptional = warehouseRepository.findById(warehouseId);
+        if (warehouseOptional.isPresent()) {
+            ProductEntity product = new ProductEntity();
+            product.setName(name);
+            product.setCategory(category);
+            product.setAmount(amount);
+            product.setUnit(unit);
+            product.setWarehouse(warehouseOptional.get());
             productRepository.save(product);
             return "Product saved";
         } else {
@@ -59,17 +57,45 @@ public class MainController {
         }
     }
 
-    @GetMapping(path="/product/all")
+    @GetMapping(path="/products/all")
     public @ResponseBody Iterable<ProductEntity> getAllProducts() {
         return productRepository.findAll();
     }
 
-    @GetMapping(path="/warehouse/{id}/product/all")
-    public @ResponseBody Iterable<ProductEntity> getAllProductsByWarehouseId(@PathVariable Integer id) {
-        WarehouseEntity warehouse = warehouseRepository.findById(id).orElse(null);
-        if (warehouse == null) {
-            return new ArrayList<>();
+    // Angepasste Funktionalitäten gemäß den Anforderungen
+
+    @GetMapping(path="/{id}")
+    public @ResponseBody Optional<WarehouseEntity> getWarehouseById(@PathVariable Integer id) {
+        return warehouseRepository.findById(id);
+    }
+
+    @GetMapping(path="/{id}/products/{productId}")
+    public @ResponseBody Optional<ProductEntity> getProductByIdAndWarehouseId(@PathVariable Integer id, @PathVariable Integer productId) {
+        Optional<WarehouseEntity> warehouse = warehouseRepository.findById(id);
+        if (warehouse.isPresent()) {
+            return warehouse.get().getProducts().stream()
+                    .filter(product -> product.getId().equals(productId))
+                    .findFirst();
         }
-        return warehouse.getProducts();
+        return Optional.empty();
+    }
+
+    @PutMapping(path="/{id}")
+    public @ResponseBody String updateWarehouse(@PathVariable Integer id, @RequestParam String warehouseName,
+                                                @RequestParam String street, @RequestParam String city,
+                                                @RequestParam String country, @RequestParam String plz) {
+        Optional<WarehouseEntity> warehouseOptional = warehouseRepository.findById(id);
+        if (warehouseOptional.isPresent()) {
+            WarehouseEntity warehouse = warehouseOptional.get();
+            warehouse.setWarehouseName(warehouseName);
+            warehouse.setStreet(street);
+            warehouse.setCity(city);
+            warehouse.setCountry(country);
+            warehouse.setPlz(plz);
+            warehouseRepository.save(warehouse);
+            return "Warehouse updated";
+        } else {
+            return "Warehouse not found";
+        }
     }
 }
